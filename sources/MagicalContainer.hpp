@@ -6,7 +6,9 @@ namespace ariel {
     class MagicalContainer {
     private:
         std::vector<int> _elements;
+        std::vector<int*> _primeElements;
         int _size;
+        int _sizeP;
         MagicalContainer& operator=(MagicalContainer&& other) = delete;
     public:
         MagicalContainer();
@@ -16,14 +18,17 @@ namespace ariel {
         int size() const{
             return _size;
         }
+        int sizeP() const{
+            return _sizeP;
+        }
         int getElementAt(int index) const;
+        int getPElementAt(int index) const;
 
 
         class AscendingIterator;
         class SideCrossIterator;
         class PrimeIterator;
     };
-
     class MagicalContainer::AscendingIterator {
     private:
         MagicalContainer& _container;
@@ -118,12 +123,13 @@ namespace ariel {
         ~PrimeIterator() = default;
         PrimeIterator& operator=(const PrimeIterator& other) {
             return *this;
-        }        bool operator==(const PrimeIterator& other) const;
+        }        
+        bool operator==(const PrimeIterator& other) const;
         bool operator!=(const PrimeIterator& other) const;
         bool operator>(const PrimeIterator& other) const;
         bool operator<(const PrimeIterator& other) const;
         int operator*() const{
-            return _container.getElementAt(_currentIndex);
+            return _container.getPElementAt(_currentIndex);
         }
         PrimeIterator& operator++(){
             _currentIndex++;
@@ -134,11 +140,8 @@ namespace ariel {
         }
         PrimeIterator end(){
             PrimeIterator itar(_container);
-            itar._currentIndex = _container.size();
+            itar._currentIndex = _container.sizeP();
             return itar;
         }
-
-    private:
-        bool isPrime(int number);
     };
 }

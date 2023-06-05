@@ -1,15 +1,29 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <cmath>
 #include "MagicalContainer.hpp"
 
 using namespace std;
 using namespace ariel;
 
+bool isPrime(int number) {
+    if(number == 2){
+        return true;
+    }
+    if(number % 2 == 0 || number < 2){
+        return false;
+    }
+    for (int i = 2; i <= sqrt(number); ++i) {
+        if (number % i == 0) {
+            return false;
+        }
+    }
+    return true;
+}
 // Implementation of MagicalContainer
-
 MagicalContainer::MagicalContainer():
-    _elements(),_size(0){}
+    _elements(),_size(0),_sizeP(0){}
 
 // MagicalContainer::MagicalContainer(MagicalContainer& other):
 //     _elements(),_size(0){}
@@ -19,8 +33,14 @@ MagicalContainer::MagicalContainer():
 void MagicalContainer::addElement(int element) {
     _elements.push_back(element);
     _size++;
+    if(isPrime(element)){
+        int * pnt = &_elements.back();
+        _primeElements.push_back(pnt);
+        _sizeP++;
+        sort(_primeElements.begin(),_primeElements.end());
+        cout << *pnt << endl;
+    }
     sort(_elements.begin(),_elements.end());
-
 }
 
 void MagicalContainer::removeElement(int element) {
@@ -31,15 +51,30 @@ void MagicalContainer::removeElement(int element) {
             break;
         }
     }
+    if(isPrime(element)){
+        for(auto it = _primeElements.begin(); it != _primeElements.end(); ++it){
+            if(**it == element){
+                _primeElements.erase(it);
+                --_sizeP;
+                
+            }
+        }
+    }
 }
-
-
 
 int MagicalContainer::getElementAt(int index) const {
     if(index < 0 || _size <=index){
         throw out_of_range("Invalid index");
     }
     return _elements.at(static_cast<std::vector<int>::size_type>(index));  
+}
+
+int MagicalContainer::getPElementAt(int index) const {
+    if(index < 0 || _size <=index){
+        throw out_of_range("Invalid index");
+    }
+    // cout << *(_primeElements.at(static_cast<std::vector<int*>::size_type>(index))) <<endl;
+    return *(_primeElements.at(static_cast<std::vector<int*>::size_type>(index)));  
 }
 
 // Implementation of AscendingIterator
@@ -112,9 +147,6 @@ MagicalContainer::PrimeIterator::PrimeIterator(MagicalContainer& container) :
 MagicalContainer::PrimeIterator::PrimeIterator(const PrimeIterator& other) :
     _container(other._container), _currentIndex(other._currentIndex) {}
 
-
-
-
 bool MagicalContainer::PrimeIterator::operator==(const PrimeIterator& other) const {
     return this->_currentIndex == other._currentIndex;
 }
@@ -131,20 +163,3 @@ bool MagicalContainer::PrimeIterator::operator<(const PrimeIterator& other) cons
     return this->_container.getElementAt(this->_currentIndex) < other._container.getElementAt(other._currentIndex);
 }
 
-
-
-
-
-
-
-bool MagicalContainer::PrimeIterator::isPrime(int number) {
-    if (number < 2) {
-        return false;
-    }
-    for (int i = 2; i * i <= number; ++i) {
-        if (number % i == 0) {
-            return false;
-        }
-    }
-    return true;
-}
