@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <iostream>
 
 namespace ariel {
     class MagicalContainer {
@@ -9,9 +10,12 @@ namespace ariel {
         std::vector<int*> _primeElements;
         int _size;
         int _sizeP;
+        MagicalContainer(const MagicalContainer&& other) = delete;
+        MagicalContainer& operator=(const MagicalContainer& other) = default;
         MagicalContainer& operator=(MagicalContainer&& other) = delete;
     public:
         MagicalContainer();
+        MagicalContainer(const MagicalContainer& other);
         ~MagicalContainer() = default;
         void addElement(int element);
         void removeElement(int element);
@@ -33,13 +37,17 @@ namespace ariel {
     private:
         MagicalContainer& _container;
         int _currentIndex;
-
+        AscendingIterator& operator =(AscendingIterator&& other) = delete;
+        AscendingIterator(AscendingIterator&& other)noexcept;
     public:
         AscendingIterator(MagicalContainer& container);
         AscendingIterator(const AscendingIterator& other);
         ~AscendingIterator() = default;
     
         AscendingIterator& operator=(const AscendingIterator& other) {
+            if(&this->_container != &other._container){
+                throw std::runtime_error("diffrent containers");
+            }
             return *this;
         }       
         bool operator==(const AscendingIterator& other) const;
@@ -50,6 +58,9 @@ namespace ariel {
             return _container.getElementAt(_currentIndex);
         }
         AscendingIterator& operator++(){
+            if(_currentIndex == _container.size()){
+                throw std::runtime_error("already in the end");
+            }
             _currentIndex++;
             return *this;
         }
@@ -67,13 +78,18 @@ namespace ariel {
     private:
         MagicalContainer& _container;
         int _currentIndex;
+        int _demoIndex;
         bool _forwardDirection;
-
+        SideCrossIterator(SideCrossIterator&& other)noexcept;
+        SideCrossIterator& operator=(SideCrossIterator&& other) = delete;
     public:
         SideCrossIterator(MagicalContainer& container);
         SideCrossIterator(const SideCrossIterator& other);
         ~SideCrossIterator() = default;
         SideCrossIterator& operator=(const SideCrossIterator& other) {
+            if(&this->_container != &other._container){
+                throw std::runtime_error("diffrent containers");
+            }
             return *this;
         }
         bool operator==(const SideCrossIterator& other) const;
@@ -84,15 +100,19 @@ namespace ariel {
             return _container.getElementAt(_currentIndex);
         }
         SideCrossIterator& operator++(){
+            if(_demoIndex == _container.size()){
+                throw std::runtime_error("already in the end");
+            }
+            _demoIndex++;
             if(_container.size() % 2 == 0 && _currentIndex == (_container.size()/2)){
                 _currentIndex = _container.size();
                 return *this;
             }
-            else if(_currentIndex == (_container.size()-1)/2){
+            if(_container.size() % 2 != 0 && _currentIndex == (_container.size()-1)/2){
                 _currentIndex = _container.size();
                 return *this;
             }
-            if(_forwardDirection == true){
+            if(_forwardDirection){
                 _forwardDirection = false;
                 _currentIndex = (_container.size()-1) - _currentIndex;
             }
@@ -116,12 +136,16 @@ namespace ariel {
     private:
         MagicalContainer& _container;
         int _currentIndex;
-
+        PrimeIterator(PrimeIterator&& container)noexcept;
+        PrimeIterator& operator=(PrimeIterator&& other) = delete;
     public:
         PrimeIterator(MagicalContainer& container);
         PrimeIterator(const PrimeIterator& other);
         ~PrimeIterator() = default;
         PrimeIterator& operator=(const PrimeIterator& other) {
+            if(&this->_container != &other._container){
+                throw std::runtime_error("diffrent containers");
+            }
             return *this;
         }        
         bool operator==(const PrimeIterator& other) const;
@@ -132,6 +156,9 @@ namespace ariel {
             return _container.getPElementAt(_currentIndex);
         }
         PrimeIterator& operator++(){
+            if(_currentIndex == _container.sizeP()){
+                throw std::runtime_error("already in the end");
+            }
             _currentIndex++;
             return *this;
         }
