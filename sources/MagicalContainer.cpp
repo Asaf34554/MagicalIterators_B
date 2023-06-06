@@ -33,14 +33,16 @@ MagicalContainer::MagicalContainer():
 void MagicalContainer::addElement(int element) {
     _elements.push_back(element);
     _size++;
-    if(isPrime(element)){
-        int * pnt = &_elements.back();
-        _primeElements.push_back(pnt);
-        _sizeP++;
-        sort(_primeElements.begin(),_primeElements.end());
-        cout << *pnt << endl;
-    }
     sort(_elements.begin(),_elements.end());
+    _primeElements.clear();
+    _sizeP = 0;
+    for(auto it = _elements.begin();it != _elements.end(); ++it){
+        if(isPrime(*it)){
+            _sizeP++;
+            int * ans = &(*it);
+            _primeElements.push_back(ans);
+        }
+    }
 }
 
 void MagicalContainer::removeElement(int element) {
@@ -56,7 +58,7 @@ void MagicalContainer::removeElement(int element) {
             if(**it == element){
                 _primeElements.erase(it);
                 --_sizeP;
-                
+                break;
             }
         }
     }
